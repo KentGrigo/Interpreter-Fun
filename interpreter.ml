@@ -37,20 +37,20 @@ let rec lookup (id: id) (storage: (id * 'a) list): 'a =
     else lookup id storage'
 
 let rec interpretExpression
-(expression: expression)
-(valueStorage: value_storage)
-(functionStorage: function_storage)
+  (expression: expression)
+  (valueStorage: value_storage)
+  (functionStorage: function_storage)
 : int =
-match expression with
-| Id id -> lookup id valueStorage
-| Int value -> value
-| Add (expression1, expression2) ->
-  let value1: int = interpretExpression expression1 valueStorage functionStorage
-  and value2: int = interpretExpression expression2 valueStorage functionStorage
-  in value1 + value2
-| FuncApp id ->
-  let expression' = lookup id functionStorage
-  in interpretExpression expression' valueStorage functionStorage
+  match expression with
+  | Id id -> lookup id valueStorage
+  | Int value -> value
+  | Add (expression1, expression2) ->
+    let value1 = interpretExpression expression1 valueStorage functionStorage
+    and value2 = interpretExpression expression2 valueStorage functionStorage
+    in value1 + value2
+  | FuncApp id ->
+    let expression' = lookup id functionStorage
+    in interpretExpression expression' valueStorage functionStorage
 
 let interpretStatement
   (statement: statement)
