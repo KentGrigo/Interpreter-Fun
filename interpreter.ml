@@ -5,10 +5,10 @@ expr :=
 | ID = expr
 | expr + expr
 */
- 
+
 alias ValueStorage = Map<(ID, Int)>
 alias FunctionStorage = Map<(ID, Expr)>
- 
+
 data Expr =
 | ID of string
 | Int of int
@@ -17,17 +17,17 @@ data Expr =
 | Statement of [Expr]
 | FuncDecl of ID * Expr
 | FuncApp of ID
- 
+
 Statement [
   (Assign (ID "x") (Int 2))
   (Assign (ID "y") (Int 3))
   (Add (ID "x") (ID "y"))
 ]
- 
+
 fun interpret (expr: Expr): Int =
     let (val, _, _) = interpretExpr(expr, [], [])
     val
- 
+
 fun interpretStatement(
     exprs: [Expr],
     valueStorage: ValueStorage,
@@ -39,7 +39,7 @@ fun interpretStatement(
     | expr'::expr's =>
       let (val, storage') = interpretExpr(expr', storage)
       interpretStatement(expr's, storage')
- 
+
 fun interpretExpr(
     expr: Expr,
     valueStorage: ValueStorage,
@@ -65,4 +65,3 @@ fun interpretExpr(
   | FuncApp id =>
     let expr' = functionStorage[id]
     interpretExpr(expr', valueStorage, functionStorage)
- 
