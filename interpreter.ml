@@ -1,5 +1,3 @@
-exception Invalid_storage
-
 type id = string
 
 type expression =
@@ -32,7 +30,7 @@ let program = Program [
 
 let rec lookup (id: id) (storage: (id * 'a) list): 'a =
   match storage with
-  | [] -> raise Invalid_storage
+  | [] -> raise Not_found
   | (id', element)::storage' ->
     if String.equal id id'
     then element
