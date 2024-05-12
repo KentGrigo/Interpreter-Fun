@@ -19,13 +19,13 @@ type value_storage = (id * int) list
 type function_storage = (id * expression) list
 
 let program = Program [
-  Expr (Id "x");
   Expr (Int 5);
-  Expr (Add (Int 5, Int 4));
   Expr (Add (Int 5, Int 4));
   Assign ("x", Int 2);
   Assign ("y", Int 3);
   Expr (Add (Id "x", Id "y"));
+  FuncDecl ("f", Int 6);
+  Expr (Add (FuncApp "f", (Int 5)));
 ]
 
 let rec lookup (id: id) (storage: (id * 'a) list): 'a =
@@ -83,3 +83,8 @@ let interpretProgram(program: program): int =
   | Program statements ->
     let (value, _, _) = interpretStatements statements [] []
     in value
+
+let result = interpretProgram program
+let () =
+  print_int(result);
+  print_newline();
