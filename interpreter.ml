@@ -32,7 +32,7 @@ let rec lookup (id: id) (storage: (id * 'a) list): 'a =
   match storage with
   | [] -> raise Not_found
   | (id', element)::storage' ->
-    if String.equal id id'
+    if id = id'
     then element
     else lookup id storage'
 
