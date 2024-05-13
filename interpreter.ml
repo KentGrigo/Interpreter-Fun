@@ -18,28 +18,20 @@ type program =
 type value_storage = (id * int) list
 type function_storage = (id * expression) list
 
-let rec lookup (id: id) (storage: (id * 'a) list): 'a =
-  match storage with
-  | [] -> raise Not_found
-  | (id', element)::storage' ->
-    if id = id'
-    then element
-    else lookup id storage'
-
 let rec interpretExpression
   (expression: expression)
   (valueStorage: value_storage)
   (functionStorage: function_storage)
 : int =
   match expression with
-  | Id id -> lookup id valueStorage
+  | Id id -> List.assoc id valueStorage
   | Int value -> value
   | Add (expression1, expression2) ->
     let value1 = interpretExpression expression1 valueStorage functionStorage
     and value2 = interpretExpression expression2 valueStorage functionStorage
     in value1 + value2
   | FuncApp id ->
-    let expression' = lookup id functionStorage
+    let expression' = List.assoc id functionStorage
     in interpretExpression expression' valueStorage functionStorage
 
 let interpretStatement
