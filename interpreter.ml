@@ -14,9 +14,10 @@ type statement =
 type program =
 | Program of statement list
 
-(* TODO: Should be hashmap instead of list *)
-type value_storage = (id * int) list
-type function_storage = (id * expression) list
+module Id = struct type t = id let compare x1 x2 = Stdlib.compare x1 x2 end
+module IdMap = Map.Make(Id)
+type value_storage = int IdMap.t
+type function_storage = expression IdMap.t
 
 let rec interpretExpression
   (expression: expression)
@@ -24,14 +25,14 @@ let rec interpretExpression
   (functionStorage: function_storage)
 : int =
   match expression with
-  | Id id -> List.assoc id valueStorage
+  | Id id -> IdMap.find id valueStorage
   | Int value -> value
   | Add (expression1, expression2) ->
     let value1 = interpretExpression expression1 valueStorage functionStorage
     and value2 = interpretExpression expression2 valueStorage functionStorage
     in value1 + value2
   | FuncApp id ->
-    let expression' = List.assoc id functionStorage
+    let expression' = IdMap.find id functionStorage
     in interpretExpression expression' valueStorage functionStorage
 
 let interpretStatement
@@ -45,8 +46,8 @@ let interpretStatement
     in (value, valueStorage, functionStorage)
   | Assign (id, expression) ->
     let value = interpretExpression expression valueStorage functionStorage
-    in (value, (id, value)::valueStorage, functionStorage)
-  | FuncDecl (id, expression) -> (0, valueStorage, (id, expression)::functionStorage)
+    in (value, IdMap.add id value valueStorage, functionStorage)
+  | FuncDecl (id, expression) -> (0, valueStorage, IdMap.add id expression functionStorage)
 
 let rec interpretStatements
   (statements: statement list)
@@ -63,7 +64,7 @@ let rec interpretStatements
 let interpretProgram(program: program): int =
   match program with
   | Program statements ->
-    let (value, _, _) = interpretStatements statements [] []
+    let (value, _, _) = interpretStatements statements IdMap.empty IdMap.empty
     in value
 
 let program = Program [
